@@ -15,6 +15,11 @@ public class Game {
         while(true){
 
             if(!p.getCanMove()){
+                StdDraw.filledSquare((terrain.getSize()/2)-0.5, (terrain.getSize()/2)-0.5, terrain.getSize()/2);
+                StdDraw.setPenColor(StdDraw.WHITE);
+                StdDraw.text((terrain.getSize()/2)-0.5, (terrain.getSize()/2)-0.5, "LOADING");
+                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.show();
                 compteurTime--;
             }
             if (compteurTime==0){

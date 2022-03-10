@@ -1,22 +1,22 @@
 import GUILibrary.StdDraw;
 
 public class Road {
-    private double y;
+    private int y;
     private int longueur;
     private char cote;
     private double speed;
-    public Road(double y, int longueur, char cote, double speed){
+    public Road(int y, int longueur, char cote, double speed){
         this.y=y;
         this.longueur=longueur;
         this.cote = cote;
         this.speed = speed;
     }
 
-    public Road(double y, int longueur, char cote){
+    public Road(int y, int longueur, char cote){
         this(y,longueur,cote,0.8);
     }
 
-    public double getY() {
+    public int getY() {
         return y;
     }
 

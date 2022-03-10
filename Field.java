@@ -5,6 +5,7 @@ import GUILibrary.StdDraw;
 import java.util.List;
 import java.util.ArrayList;
 // import java.awt.Color;
+import java.util.Arrays;
 
 public class Field{
 
@@ -17,6 +18,7 @@ public class Field{
     private List<Arbre> arbres;
     private List<Road> roads;
     private List<Vroum> vroums;
+    private List<Coin> coins;
     private double difficulte; 
 
     public Field(int size){
@@ -28,11 +30,12 @@ public class Field{
         this.arbres = new ArrayList<>();
         this.roads = new ArrayList<>();
         this.vroums = new ArrayList<>();
+        this.coins = new ArrayList<>();
         this.canKey = true;
 
-        this.difficulte = 8;
+        this.difficulte = 5;
 
-        p = new Perso(0,0,0.4,180);
+        p = new Perso(size/2, 0, 0.5, 90);
     }
 
     public void addArbre(int x, int y){
@@ -43,8 +46,6 @@ public class Field{
         double max = difficulte/10/3;
         double min = (difficulte/10/3)-0.1;
         double speed = min + (Math.random()*(max-min));
-        System.out.println(y+"  "+speed);
-        System.out.println(min+"  "+max);
         Road r = new Road(y,size,cote,speed);
         roads.add(r);
         return r;
@@ -121,6 +122,8 @@ public class Field{
             }
         }
 
+        pickCoin();
+
         if (p.getY()>=size) {
             newLevel();
         }
@@ -135,29 +138,6 @@ public class Field{
         return false;
     }
 
-    public void drawBackground(){
-        StdDraw.setPenColor(StdDraw.GREEN);
-        StdDraw.filledSquare(size/2-0.5, size/2-0.5, size/2);
-
-        StdDraw.setPenColor(StdDraw.WHITE);
-        for (double i = 0.5; i < size; i++) 
-            StdDraw.line(i, -0.5, i, size-0.5);
-        for (double i = 0.5; i < size; i++) 
-            StdDraw.line(-0.5, i, size-0.5, i);
-    }
-
-    public void affiche(){
-        for (Road road : roads) {
-            road.afficheRoad();
-        }
-        for (Arbre arbre : arbres) {
-            arbre.afficheArbre();
-        }
-        for (Vroum vroum : vroums){
-            vroum.afficheVroum();
-        }
-    }
-
     public void moveVroums(){
         List<Vroum> supprVroums = new ArrayList<Vroum>();
         for (Vroum vroum : vroums){
@@ -169,6 +149,19 @@ public class Field{
             vroums.remove(supprVroum);
         }
 
+    }
+
+    public void pickCoin(){
+        Coin supprCoins = null;
+
+        for (Coin coin : this.coins){
+            if (coin.getX()==p.getX() && coin.getY()==p.getY()){
+                p.coinUp(1);
+                supprCoins = coin;
+            }
+        }
+        if(supprCoins != null)
+            coins.remove(supprCoins);       
     }
 
     public boolean verifMort(){
@@ -191,6 +184,10 @@ public class Field{
         vroums.clear();
     }
 
+    public void videCoins(){
+        coins.clear();
+    }
+
     public void algoVroum(){
         compteurVroum++;
         if(compteurVroum >= 50){
@@ -203,8 +200,37 @@ public class Field{
         }
     }
 
+    static public boolean contains(int[] T, String val) {
+        return Arrays.toString(T).contains(val);
+    }
+
     public void algoArbre(){
-        //faire algo
+
+        int[] listRoadsY = new int[roads.size()];
+        
+        for (int i = 0; i < listRoadsY.length; i++) {
+            listRoadsY[i] = roads.get(i).getY();
+        }
+
+        for (int i = 0; i<size-1; i++){
+            if(!contains(listRoadsY, String.valueOf(i))){
+                for (int j = 0; j<size; j++){
+                    if(Math.random() < 0.20 && i!=0 && j != (size/2-1)){
+                        arbres.add(new Arbre(j, i));
+                    }
+                }
+            }
+        }
+    }
+
+    public void algoCoin(){
+        for (int y = 0; y<size; y++){
+            for (int x = 0; x<size; x++){
+                if(Math.random()<0.05){
+                    coins.add(new Coin(x,y));
+                }
+            }
+        }
     }
 
     public void algoLignes(){
@@ -247,13 +273,15 @@ public class Field{
         p.setRotation(180);
 
         algoLignes();
-        
+        algoArbre();
+        algoCoin();
     }
 
     public void game(){
         videRoad();
         videArbre();
         videVroum();
+        videCoins();
         initBoard();
         p.setCanMove(false);
     }
@@ -264,22 +292,51 @@ public class Field{
         
         if(difficulte <= 8){
             difficulte+=0.1;
-            System.out.println(difficulte);
         }
     }
 
     public void restart(){
         game();
         p.setScore(0);
+        p.setCoinCount(0);
         difficulte = 5;
     }
 
+    public void drawBackground(){
+        StdDraw.setPenColor(StdDraw.GREEN);
+        StdDraw.filledSquare(size/2-0.5, size/2-0.5, size/2);
+
+        StdDraw.setPenColor(StdDraw.WHITE);
+        for (double i = 0.5; i < size; i++) 
+            StdDraw.line(i, -0.5, i, size-0.5);
+        for (double i = 0.5; i < size; i++) 
+            StdDraw.line(-0.5, i, size-0.5, i);
+    }
+
+    public void affiche(){
+        for (Road road : roads) {
+            road.afficheRoad();
+        }
+        for (Coin coin : coins){
+            coin.afficheCoin();
+        }
+        for (Arbre arbre : arbres) {
+            arbre.afficheArbre();
+        }
+        for (Vroum vroum : vroums){
+            vroum.afficheVroum();
+        }
+    }
+
     public void drawAll(){
-        drawBackground();
-        affiche();
-        p.affichePerso();
-        p.afficheScore(size-2, size-1);
-        StdDraw.show();
+        if(p.getCanMove()){
+            drawBackground();
+            affiche();
+            p.affichePerso();
+            p.affichescore(size-2, size-1);
+            p.affichecoincount(1, size-1);
+            StdDraw.show();
+        }
     }
 
     public int getSize(){

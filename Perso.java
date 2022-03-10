@@ -1,5 +1,7 @@
 // import java.awt.Color;
 
+import org.w3c.dom.Text;
+
 import GUILibrary.StdDraw;
 
 public class Perso {
@@ -9,6 +11,7 @@ public class Perso {
     private double size;
     private int score;
     private boolean canMove;
+    private int coinCount;
 
     public Perso(int x, int y, double size, int rotation) {
         this .x = x;
@@ -17,6 +20,7 @@ public class Perso {
         this.rotation = rotation;
         this.canMove = false;
         this.score = 0;
+        this.coinCount = 0;
     }
     public int getX(){
         return this.x;
@@ -32,6 +36,9 @@ public class Perso {
     }
     public int getScore() {
         return score;
+    }
+    public int getCoinCount() {
+        return coinCount;
     }
     public boolean getCanMove(){
         return this.canMove;
@@ -52,6 +59,9 @@ public class Perso {
     public void setScore(int score) {
         this.score = score;
     }
+    public void setCoinCount(int coinCount) {
+        this.coinCount = coinCount;
+    }
     public void setCanMove(boolean canMove) {
         this.canMove = canMove;
     }
@@ -60,8 +70,20 @@ public class Perso {
         StdDraw.picture(x, y, "images/perso.png", 1, 1, rotation);
     }
 
-    public void afficheScore(double x, double y){
+    public void coinUp(int coins){
+        this.coinCount+=coins;
+    }
+
+    public void coinDown(int coins){
+        this.coinCount-=coins;
+    }
+
+    public void affichescore(double x, double y){
         StdDraw.text(x,y , ("Score: "+this.score));
+    }
+
+    public void affichecoincount(double x, double y){
+        StdDraw.text(x,y , ("Coins: "+this.coinCount));
     }
 
     public void respawn(int x, int y){
