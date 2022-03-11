@@ -75,9 +75,15 @@ public class Field{
                 x = p.getX();
                 y = p.getY();
                 p.setRotation(180);
-                if(y<=size-1 && !isCollision(x, y+1, arbres))
-                    p.setY(y+d);
-                drawAll();
+                if(coins.size() != 0){
+                    if(y<=size-2 && !isCollision(x, y+1, arbres))
+                        p.setY(y+d);
+                    drawAll();
+                }else{
+                    if(y<=size-1 && !isCollision(x, y+1, arbres))
+                        p.setY(y+d);
+                    drawAll();
+                }
             }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
                 canKey = true;
             }
@@ -114,7 +120,7 @@ public class Field{
                 x = p.getX();
                 y = p.getY();
                 p.setRotation(90);
-                if(x<=size && !isCollision(x+1, y, arbres))
+                if(x<=size-2 && !isCollision(x+1, y, arbres))
                     p.setX(x+d);
                 drawAll();
             }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
@@ -204,6 +210,15 @@ public class Field{
         return Arrays.toString(T).contains(val);
     }
 
+    static public boolean contains(int[][] T, int[] xy) {
+        for (int[] loc : T) {
+            if (loc[0] == xy[0] && loc[1] == xy[1]){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void algoArbre(){
 
         int[] listRoadsY = new int[roads.size()];
@@ -224,10 +239,18 @@ public class Field{
     }
 
     public void algoCoin(){
+        int [][] arbresXY = new int[arbres.size()][2];
+        for (int i = 0; i < arbres.size(); i++) {
+            arbresXY[i][0] = arbres.get(i).getX();
+            arbresXY[i][1] = arbres.get(i).getY();
+        }
+        
         for (int y = 0; y<size; y++){
             for (int x = 0; x<size; x++){
-                if(Math.random()<0.05){
-                    coins.add(new Coin(x,y));
+                if(!contains(arbresXY, new int[] {x,y} )){
+                    if (Math.random()<0.05) {
+                        coins.add(new Coin(x,y));
+                    }
                 }
             }
         }
@@ -287,11 +310,13 @@ public class Field{
     }
 
     public void newLevel(){
-        game();
-        p.setScore(p.getScore()+10);
+        if(coins.size() == 0){
+            game();
+            p.setScore(p.getScore()+10);
         
-        if(difficulte <= 8){
-            difficulte+=0.1;
+            if(difficulte <= 8){
+                difficulte+=0.1;
+            }
         }
     }
 
@@ -306,6 +331,11 @@ public class Field{
         StdDraw.setPenColor(StdDraw.GREEN);
         StdDraw.filledSquare(size/2-0.5, size/2-0.5, size/2);
 
+        if(coins.size() != 0){
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.filledRectangle(size/2-0.5, size-1, size/2, 0.5);
+        }
+
         StdDraw.setPenColor(StdDraw.WHITE);
         for (double i = 0.5; i < size; i++) 
             StdDraw.line(i, -0.5, i, size-0.5);
@@ -317,12 +347,15 @@ public class Field{
         for (Road road : roads) {
             road.afficheRoad();
         }
-        for (Coin coin : coins){
-            coin.afficheCoin();
-        }
+        
         for (Arbre arbre : arbres) {
             arbre.afficheArbre();
         }
+
+        for (Coin coin : coins){
+            coin.afficheCoin();
+        }
+
         for (Vroum vroum : vroums){
             vroum.afficheVroum();
         }
