@@ -1,6 +1,8 @@
 // import java.awt.Color;
 
-import org.w3c.dom.Text;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import GUILibrary.StdDraw;
 
@@ -12,8 +14,13 @@ public class Perso {
     private int score;
     private boolean canMove;
     private int coinCount;
+    private String name;
+    private Field f;
+    public List<Integer> alphabet = new ArrayList<>();
 
-    public Perso(int x, int y, double size, int rotation) {
+    private static final Scanner input = new Scanner(System.in);
+
+    public Perso(int x, int y, double size, int rotation, Field f) {
         this .x = x;
         this.y = y;
         this.size = size;
@@ -21,6 +28,11 @@ public class Perso {
         this.canMove = false;
         this.score = 0;
         this.coinCount = 0;
+        this.name = "";
+        for (int i = 65; i<=90; i++)
+            this.alphabet.add(i);
+        this.alphabet.add(32);
+        this.f = f;
     }
     public int getX(){
         return this.x;
@@ -42,6 +54,56 @@ public class Perso {
     }
     public boolean getCanMove(){
         return this.canMove;
+    }
+
+    public String getName() {
+        // System.out.println("Quel est le joueur? (pas de ' ', de ':' ni de '/')");
+        // this.name = input.next();
+        StdDraw.clear();
+        StdDraw.filledSquare((f.getSize()/2)-0.5, (f.getSize()/2)-0.5,  f.getSize()/2);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.text((f.getSize()/2)-0.5, f.getSize()/2, "VEUILLEZ ENTRER VOTRE PSEUDO");
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.show();
+        StdDraw.pause(500);
+
+        boolean isTyping = true;
+
+        while(isTyping){
+            boolean clickbtn = true;
+            //verif appuie
+            for(int lettre : alphabet){
+                if (StdDraw.isKeyPressed(lettre) && clickbtn){
+                    this.name += (char)lettre;
+                    do {
+                        clickbtn = false;
+                    }while (StdDraw.isKeyPressed(lettre));
+                    clickbtn = true;
+                }
+            }
+            if (StdDraw.isKeyPressed(8) && clickbtn && this.name.length()>0){
+                this.name = this.name.substring(0, this.name.length()-1);
+                do {
+                    clickbtn = false;
+                }while (StdDraw.isKeyPressed(8));
+                clickbtn = true;
+            }
+
+            StdDraw.clear();
+            StdDraw.filledSquare((f.getSize()/2)-0.5, (f.getSize()/2)-0.5,  f.getSize()/2);
+            StdDraw.setPenColor(StdDraw.WHITE);
+            StdDraw.text((f.getSize()/2)-0.5, f.getSize()/2, "VEUILLEZ ENTRER VOTRE PSEUDO");
+
+            StdDraw.text(f.getSize()/2-0.5, f.getSize()/2-1.5, name);
+            StdDraw.setPenColor(StdDraw.BLACK);
+
+            StdDraw.show();
+
+            if(StdDraw.isKeyPressed(10))
+                isTyping = false;
+        }
+
+        return this.name;
     }
 
     public void setX(int x){
@@ -76,14 +138,6 @@ public class Perso {
 
     public void coinDown(int coins){
         this.coinCount-=coins;
-    }
-
-    public void affichescore(double x, double y){
-        StdDraw.text(x,y , ("Score: "+this.score));
-    }
-
-    public void affichecoincount(double x, double y){
-        StdDraw.text(x,y , ("Coins: "+this.coinCount));
     }
 
     public void respawn(int x, int y){

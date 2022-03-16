@@ -3,6 +3,9 @@
  */
 import GUILibrary.StdDraw;
 import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 // import java.awt.Color;
 import java.util.Arrays;
@@ -20,6 +23,7 @@ public class Field{
     private List<Vroum> vroums;
     private List<Coin> coins;
     private double difficulte; 
+    private int totalCoin;
 
     public Field(int size){
         // StdDraw.setCanvasSize(700, 700);
@@ -35,7 +39,7 @@ public class Field{
 
         this.difficulte = 5;
 
-        p = new Perso(size/2, 0, 0.5, 90);
+        p = new Perso(size/2, 0, 0.5, 90,this);
     }
 
     public void addArbre(int x, int y){
@@ -75,7 +79,7 @@ public class Field{
                 x = p.getX();
                 y = p.getY();
                 p.setRotation(180);
-                if(coins.size() != 0){
+                if(p.getCoinCount()<totalCoin){
                     if(y<=size-2 && !isCollision(x, y+1, arbres))
                         p.setY(y+d);
                     drawAll();
@@ -163,6 +167,8 @@ public class Field{
         for (Coin coin : this.coins){
             if (coin.getX()==p.getX() && coin.getY()==p.getY()){
                 p.coinUp(1);
+                if(p.getCoinCount()>totalCoin)
+                    p.setScore(p.getScore()+2);
                 supprCoins = coin;
             }
         }
@@ -245,8 +251,8 @@ public class Field{
             arbresXY[i][1] = arbres.get(i).getY();
         }
         
-        for (int y = 0; y<size; y++){
-            for (int x = 0; x<size; x++){
+        for (int y = 1; y<size-1; y++){
+            for (int x = 1; x<size-1; x++){
                 if(!contains(arbresXY, new int[] {x,y} )){
                     if (Math.random()<0.05) {
                         coins.add(new Coin(x,y));
@@ -254,6 +260,7 @@ public class Field{
                 }
             }
         }
+        totalCoin = coins.size()/2;
     }
 
     public void algoLignes(){
@@ -313,6 +320,7 @@ public class Field{
         if(coins.size() == 0){
             game();
             p.setScore(p.getScore()+10);
+            p.setCoinCount(0);
         
             if(difficulte <= 8){
                 difficulte+=0.1;
@@ -331,7 +339,7 @@ public class Field{
         StdDraw.setPenColor(StdDraw.GREEN);
         StdDraw.filledSquare(size/2-0.5, size/2-0.5, size/2);
 
-        if(coins.size() != 0){
+        if(p.getCoinCount()<totalCoin){
             StdDraw.setPenColor(StdDraw.RED);
             StdDraw.filledRectangle(size/2-0.5, size-1, size/2, 0.5);
         }
@@ -361,14 +369,199 @@ public class Field{
         }
     }
 
+    public void gameOverScreen() throws IOException{
+        
+        int res = -1;
+
+        double high = size/2+size/6-0.5;
+        double low = size/2-size/6-0.5;
+
+        double LocY = size/2-0.5;
+
+        double restartLocX = LocY;
+        double highScoreLocX = size/4-0.5;
+        double quitLocX = highScoreLocX + size/2;
+
+        while (res == -1){
+            StdDraw.clear();
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.text(LocY, LocY+size/4, "CROSSY ARCADE");
+            StdDraw.filledRectangle(restartLocX, LocY, 1.7, 1);
+            StdDraw.filledRectangle(highScoreLocX, LocY,1.7,1 );
+            StdDraw.filledRectangle(quitLocX, LocY,1.7,1 );
+            StdDraw.setPenColor(StdDraw.WHITE);
+            StdDraw.text(restartLocX, LocY, "RESTART");
+            StdDraw.text(highScoreLocX, LocY, "HIGHSCORE");
+            StdDraw.text(quitLocX, LocY, "QUIT");
+            StdDraw.show();
+
+            boolean clickbtn = true;
+            //verif appuie
+            if (StdDraw.isMousePressed() && clickbtn){
+                //to do
+                
+                //Coordonné//
+                double xm = StdDraw.mouseX();
+                double ym = StdDraw.mouseY();
+                //
+    
+                //Formule//
+                if (ym < high && ym > low && xm < restartLocX+1.7 && xm > restartLocX-1.7)
+                    res = 0;
+                else if (ym < high && ym > low && xm < highScoreLocX+1.7 && xm > highScoreLocX-1.7){
+                    res = 1;
+                }
+                else if(ym < high && ym > low && xm < quitLocX+1.7 && xm > quitLocX-1.7)
+                    res = 2;
+                //
+    
+              //
+                  
+                do {
+                    clickbtn = false;
+                }while (StdDraw.isMousePressed());
+                clickbtn = true;
+            }
+        }
+        switch (res) {
+            case 0:
+                restart();
+                break;
+            case 1:
+                showHighscore();
+                break;
+            default:
+                System.exit(0);
+                break;
+        }
+    }
+
+    public List<Score> sort(String[] list){
+        List<Score>listScore = new ArrayList<>();
+        
+        for (int i = 0; i<list.length; i++){
+            int max = -1;
+            Score maxScore = null;
+            int indice = 0;
+            for(int j = 0; j<list.length; j++){
+                if (Integer.parseInt(list[j].split(":")[1])>=max){
+                    maxScore = new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1]));
+                    max = maxScore.getScore();
+                    System.out.println(max);
+                    indice = j;
+                }
+            }
+            System.out.println();
+            listScore.add(maxScore);
+            String[] list2 = new String[list.length-1];
+            int x=0;
+            for (int j = 0; j < list.length; j++) {
+                if(j!=indice){
+                    list2[x] = list[j];
+                    x++;
+                }
+            }
+            list = list2;
+        }
+         for (int j = 0; j< list.length; j++){
+            listScore.add(new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1])));
+         }
+
+        return listScore;
+    }
+
+    public void showHighscore() throws IOException{
+        int res = -1;
+        String scores = "";
+        String[] listScore;
+
+        File file = new File("score.txt");
+ 
+        FileReader fis = new FileReader(file);
+        
+        int charCode;
+        while((charCode = fis.read()) != -1) {
+            scores+=(char)charCode;
+        }
+        fis.close();
+
+        listScore = scores.split("/");
+
+        List <Score> listScoreObject = sort(listScore);
+
+        double titleY = size/2.5 + size/2;
+        double high = titleY + 1;
+        double low = titleY -1;
+        double middleX = size/2-0.5;
+        double restartLocX = size/4-0.5;
+        double quitLocX = restartLocX + size/2;
+
+        while(res == -1){
+            StdDraw.clear();
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.text(middleX, titleY, "HIGHSCORE");
+            StdDraw.filledRectangle(restartLocX, titleY,1.7,1);
+            StdDraw.filledRectangle(quitLocX, titleY, 1.7,1);
+
+            int size = listScoreObject.size();
+            
+            if(size>12)
+                size = 12;
+
+            for (int i = 0; i < size; i++){
+                StdDraw.text(middleX, titleY-i-2, listScoreObject.get(i).toString());
+                if(i!=size-1){
+                    StdDraw.line(middleX-size/3, titleY-i-2.5, middleX+size/3, titleY-i-2.5);
+                }
+            }
+
+            StdDraw.setPenColor(StdDraw.WHITE);
+            StdDraw.text(restartLocX, titleY, "RESTART");
+            StdDraw.text(quitLocX, titleY, "QUIT");
+            StdDraw.show();
+
+            boolean clickbtn = true;
+            //verif appuie
+            if (StdDraw.isMousePressed() && clickbtn){
+                //to do
+                
+                //Coordonné//
+                double xm = StdDraw.mouseX();
+                double ym = StdDraw.mouseY();
+                //
+    
+                //Formule//
+                if (ym < high && ym > low && xm < restartLocX+1.7 && xm > restartLocX-1.7)
+                    res = 0;
+                else if (ym < high && ym > low && xm < quitLocX+1.7 && xm > quitLocX-1.7){
+                    res = 1;
+                }
+                //
+    
+              //
+                  
+                do {
+                    clickbtn = false;
+                }while (StdDraw.isMousePressed());
+                clickbtn = true;
+            }
+        }
+
+        switch (res) {
+            case 0:
+                restart();
+                break;
+            default:
+                System.exit(0);
+                break;
+        }
+    }
+
     public void drawAll(){
         if(p.getCanMove()){
             drawBackground();
             affiche();
             p.affichePerso();
-            p.affichescore(size-2, size-1);
-            p.affichecoincount(1, size-1);
-            StdDraw.show();
         }
     }
 
@@ -378,5 +571,9 @@ public class Field{
 
     public Perso getPerso(){
         return p;
+    }
+
+    public int getTotalCoin() {
+        return totalCoin;
     }
 }

@@ -1,12 +1,15 @@
+import java.io.IOException;
+
 import GUILibrary.StdDraw;
 
 public class Game {
 
     public static Field terrain = new Field(16);
+    public static Canevas canevas = new Canevas(16,terrain);
     public static int waitTime = 100;
     public static int compteurTime = waitTime;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Perso p = terrain.getPerso();
 
         terrain.initBoard();
@@ -32,11 +35,19 @@ public class Game {
 
             terrain.movePerso(p,1);
             if(terrain.verifMort()){
-                StdDraw.clear();
-                terrain.restart();
+                Score score = new Score(p.getName(),p.getScore());
+                score.writeScore();
+                terrain.gameOverScreen();
             }
 
             terrain.drawAll();
+
+            if(p.getCanMove()){
+                canevas.affichescore(terrain.getSize()-2, terrain.getSize()-1, p.getScore()); 
+                canevas.affichecoincount(1, terrain.getSize()-1, p.getCoinCount(), terrain.getTotalCoin());
+            }
+            
+            StdDraw.show();
             StdDraw.pause(10);
         }
         
