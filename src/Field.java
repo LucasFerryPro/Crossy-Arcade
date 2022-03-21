@@ -482,7 +482,7 @@ public class Field{
         String scores = "";
         String[] listScore;
 
-        File file = new File("score");
+        File file = new File("src\\score");
  
         FileReader fis = new FileReader(file);
         
