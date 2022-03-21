@@ -11,11 +11,6 @@ public class Game {
 
     public static void main(String[] args) throws IOException {
 
-        
-        GitHub.connectAnonymously();
-
-
-
         Perso p = terrain.getPerso();
 
         terrain.initBoard();
