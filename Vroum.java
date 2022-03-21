@@ -1,4 +1,5 @@
 import GUILibrary.StdDraw;
+import java.awt.Color;
 
 public class Vroum {
     private Road assignedRoad;
@@ -6,6 +7,10 @@ public class Vroum {
     private double x;
     private double y;
     private double speed;
+
+    public static Color[] colors = {
+
+    };
 
     public Vroum(Road assignedRoad, char cote){
         this.assignedRoad = assignedRoad;

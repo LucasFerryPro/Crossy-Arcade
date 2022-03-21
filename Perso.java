@@ -63,9 +63,10 @@ public class Perso {
         StdDraw.filledSquare((f.getSize()/2)-0.5, (f.getSize()/2)-0.5,  f.getSize()/2);
         StdDraw.setPenColor(StdDraw.WHITE);
         StdDraw.text((f.getSize()/2)-0.5, f.getSize()/2, "VEUILLEZ ENTRER VOTRE PSEUDO");
+        StdDraw.text(f.getSize()/2-0.5, f.getSize()/2-1.5, name);
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.show();
-        StdDraw.pause(500);
+        StdDraw.pause(300);
 
         boolean isTyping = true;
 

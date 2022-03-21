@@ -202,7 +202,7 @@ public class Field{
 
     public void algoVroum(){
         compteurVroum++;
-        if(compteurVroum >= 50){
+        if(compteurVroum >= 60){
             for (Road road : roads) {
                 if(Math.random()<difficulte/10)
                     addVroum(road, road.getCote()); 
@@ -317,7 +317,7 @@ public class Field{
     }
 
     public void newLevel(){
-        if(coins.size() == 0){
+        if(p.getCoinCount()>=totalCoin){
             game();
             p.setScore(p.getScore()+10);
             p.setCoinCount(0);
@@ -344,11 +344,11 @@ public class Field{
             StdDraw.filledRectangle(size/2-0.5, size-1, size/2, 0.5);
         }
 
-        StdDraw.setPenColor(StdDraw.WHITE);
-        for (double i = 0.5; i < size; i++) 
-            StdDraw.line(i, -0.5, i, size-0.5);
-        for (double i = 0.5; i < size; i++) 
-            StdDraw.line(-0.5, i, size-0.5, i);
+        // StdDraw.setPenColor(StdDraw.WHITE);
+        // for (double i = 0.5; i < size; i++) 
+        //     StdDraw.line(i, -0.5, i, size-0.5);
+        // for (double i = 0.5; i < size; i++) 
+        //     StdDraw.line(-0.5, i, size-0.5, i);
     }
 
     public void affiche(){
@@ -436,7 +436,7 @@ public class Field{
         }
     }
 
-    public List<Score> sort(String[] list){
+    public List<Score> sort(String[] list){ //a refaire car petit bug
         List<Score>listScore = new ArrayList<>();
         
         for (int i = 0; i<list.length; i++){
@@ -447,11 +447,9 @@ public class Field{
                 if (Integer.parseInt(list[j].split(":")[1])>=max){
                     maxScore = new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1]));
                     max = maxScore.getScore();
-                    System.out.println(max);
                     indice = j;
                 }
             }
-            System.out.println();
             listScore.add(maxScore);
             String[] list2 = new String[list.length-1];
             int x=0;
@@ -503,15 +501,15 @@ public class Field{
             StdDraw.filledRectangle(restartLocX, titleY,1.7,1);
             StdDraw.filledRectangle(quitLocX, titleY, 1.7,1);
 
-            int size = listScoreObject.size();
+            int sizeH = listScoreObject.size();
             
-            if(size>12)
-                size = 12;
+            if(sizeH>12)
+                sizeH = 12;
 
-            for (int i = 0; i < size; i++){
+            for (int i = 0; i < sizeH; i++){
                 StdDraw.text(middleX, titleY-i-2, listScoreObject.get(i).toString());
                 if(i!=size-1){
-                    StdDraw.line(middleX-size/3, titleY-i-2.5, middleX+size/3, titleY-i-2.5);
+                    StdDraw.line(middleX-this.size/3, titleY-i-2.5, middleX+this.size/3, titleY-i-2.5);
                 }
             }
 
