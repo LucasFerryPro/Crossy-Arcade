@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>Crossy-Arcade</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <build>
+        <extensions>
+            <extension>
+                <artifactId/>
+                <version/>
+            </extension>
+        </extensions>
+        <resources>
+            <resource>
+                <filtering/>
+                <includes/>
+                <excludes/>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <filtering/>
+                <includes/>
+                <excludes/>
+            </testResource>
+        </testResources>
+        <filters/>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <extensions/>
+                    <executions>
+                        <execution>
+                            <phase/>
+                            <goals/>
+                            <configuration/>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId/>
+                            <artifactId/>
+                            <version/>
+                            <classifier/>
+                            <systemPath/>
+                            <exclusions>
+                                <exclusion>
+                                </exclusion>
+                            </exclusions>
+                            <optional/>
+                        </dependency>
+                    </dependencies>
+                    <goals/>
+                    <inherited/>
+                    <configuration/>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId/>
+                <version/>
+                <extensions/>
+                <executions>
+                    <execution>
+                        <phase/>
+                        <goals/>
+                        <configuration/>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId/>
+                        <artifactId/>
+                        <version/>
+                        <classifier/>
+                        <systemPath/>
+                        <exclusions>
+                            <exclusion>
+                                <artifactId/>
+                                <groupId/>
+                            </exclusion>
+                        </exclusions>
+                        <optional/>
+                    </dependency>
+                </dependencies>
+                <goals/>
+                <inherited/>
+                <configuration/>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <!-- https://mvnrepository.com/artifact/org.kohsuke/github-api -->
+    <dependency>
+        <groupId>org.kohsuke</groupId>
+        <artifactId>github-api</artifactId>
+        <version>1.303</version>
+    </dependency>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+</project>
