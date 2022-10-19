@@ -5,7 +5,7 @@ import Gui.StdDraw;
 public class Game {
 
     public static Field terrain = new Field(16);
-    public static Canevas canevas = new Canevas(16,terrain);
+    public static Canevas canevas = new Canevas(terrain.getSize(), terrain);
     public static int waitTime = 100;
     public static int compteurTime = waitTime;
 
@@ -44,8 +44,8 @@ public class Game {
             terrain.drawAll();
 
             if(p.getCanMove()){
-                canevas.affichescore(terrain.getSize()-2, terrain.getSize()-1, p.getScore()); 
-                canevas.affichecoincount(1, terrain.getSize()-1, p.getCoinCount(), terrain.getTotalCoin());
+                canevas.affichescore(terrain.getSize() - terrain.getSize()/8, terrain.getSize() - 1, p.getScore());
+                canevas.affichecoincount(terrain.getSize()/9, terrain.getSize() - 1, p.getCoinCount(), terrain.getTotalCoin());
             }
             
             StdDraw.show();

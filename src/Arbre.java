@@ -36,5 +36,7 @@ public class Arbre {
         StdDraw.setPenColor(c);
         StdDraw.filledCircle(x, y, size);
         StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(x, y, size);
+        StdDraw.setPenColor(StdDraw.BLACK);
     }
 }

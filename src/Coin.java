@@ -31,6 +31,8 @@ public class Coin {
         StdDraw.setPenColor(StdDraw.YELLOW);
         StdDraw.filledCircle(x, y, 0.2);
         StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(x, y, 0.2);
+        StdDraw.setPenColor(StdDraw.BLACK);
     }
     
 }

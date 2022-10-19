@@ -11,6 +11,8 @@ import java.util.ArrayList;
 // import java.awt.Color;
 import java.util.Arrays;
 
+import static java.awt.event.KeyEvent.*;
+
 public class Field{
 
     
@@ -23,8 +25,10 @@ public class Field{
     private List<Road> roads;
     private List<Vroum> vroums;
     private List<Coin> coins;
+    private List<Score> scores;
     private double difficulte; 
     private int totalCoin;
+    private int veryTotalCoin;
 
     public Field(int size){
         // Gui.StdDraw.setCanvasSize(700, 700);
@@ -36,6 +40,7 @@ public class Field{
         this.roads = new ArrayList<>();
         this.vroums = new ArrayList<>();
         this.coins = new ArrayList<>();
+        this.scores = new ArrayList<>();
         this.canKey = true;
 
         this.difficulte = 4;
@@ -66,8 +71,6 @@ public class Field{
         return v;
     }
 
-
-    //CHANGER SYSTEME DE TOUCHE
     public void movePerso(Perso p, int d){
 
         int x;
@@ -75,7 +78,7 @@ public class Field{
         if(p.getCanMove()){
 
             //up
-            if(StdDraw.isKeyPressed(90)&&canKey){
+            if((StdDraw.isKeyPressed(90)||StdDraw.isKeyPressed(VK_UP))&&canKey){
                 canKey = false;
                 x = p.getX();
                 y = p.getY();
@@ -89,12 +92,10 @@ public class Field{
                         p.setY(y+d);
                     drawAll();
                 }
-            }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
-                canKey = true;
-            }
+            }else check();
 
             //left
-            if(StdDraw.isKeyPressed(81)&&canKey){
+            if((StdDraw.isKeyPressed(81)||StdDraw.isKeyPressed(VK_LEFT))&&canKey){
                 canKey = false;
                 x = p.getX();
                 y = p.getY();
@@ -102,12 +103,10 @@ public class Field{
                 if(x>0 && !isCollision(x-1, y, arbres))
                     p.setX(x-d);
                 drawAll();
-            }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
-                canKey = true;
-            }
+            }else check();
 
             //down
-            if(StdDraw.isKeyPressed(83)&&canKey){
+            if((StdDraw.isKeyPressed(83)||StdDraw.isKeyPressed(VK_DOWN))&&canKey){
                 canKey = false;
                 x = p.getX();
                 y = p.getY();
@@ -115,12 +114,10 @@ public class Field{
                 if(y>0 && !isCollision(x, y-1, arbres))
                     p.setY(y-d);
                 drawAll();
-            }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
-                canKey = true;
-            }
+            }else check();
 
             //right
-            if(StdDraw.isKeyPressed(68)&&canKey){
+            if((StdDraw.isKeyPressed(68)||StdDraw.isKeyPressed(VK_RIGHT))&&canKey){
                 canKey = false;
                 x = p.getX();
                 y = p.getY();
@@ -128,15 +125,19 @@ public class Field{
                 if(x<=size-2 && !isCollision(x+1, y, arbres))
                     p.setX(x+d);
                 drawAll();
-            }else if(!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
-                canKey = true;
-            }
+            }else check();
         }
 
         pickCoin();
 
         if (p.getY()>=size) {
             newLevel();
+        }
+    }
+
+    private void check() {
+        if(!StdDraw.isKeyPressed(VK_UP)&&!StdDraw.isKeyPressed(VK_DOWN)&&!StdDraw.isKeyPressed(VK_RIGHT)&&!StdDraw.isKeyPressed(VK_LEFT)&&!StdDraw.isKeyPressed(90)&&!StdDraw.isKeyPressed(81)&&!StdDraw.isKeyPressed(83)&&!StdDraw.isKeyPressed(68)&&!canKey){
+            canKey = true;
         }
     }
 
@@ -169,7 +170,7 @@ public class Field{
             if (coin.getX()==p.getX() && coin.getY()==p.getY()){
                 p.coinUp(1);
                 if(p.getCoinCount()>totalCoin)
-                    p.setScore(p.getScore()+2);
+                    p.scored(2);
                 supprCoins = coin;
             }
         }
@@ -203,11 +204,11 @@ public class Field{
 
     public void algoVroum(){
         compteurVroum++;
-        if(compteurVroum >= 60){
+        if(compteurVroum >= 150-difficulte*10){
             for (Road road : roads) {
                 if(Math.random()<difficulte/10)
-                    addVroum(road, road.getCote()); 
-                
+                    addVroum(road, road.getCote());
+
             }
             compteurVroum = 0;
         }
@@ -252,15 +253,16 @@ public class Field{
             arbresXY[i][1] = arbres.get(i).getY();
         }
         
-        for (int y = 1; y<size-1; y++){
+        for (int y = 1; y<size-3; y++){
             for (int x = 1; x<size-1; x++){
                 if(!contains(arbresXY, new int[] {x,y} )){
-                    if (Math.random()<0.05) {
+                    if (Math.random()<0.15) {
                         coins.add(new Coin(x,y));
                     }
                 }
             }
         }
+        veryTotalCoin = coins.size();
         totalCoin = coins.size()/2;
     }
 
@@ -295,12 +297,11 @@ public class Field{
             else
                 addRoad(val2, 'g');
         }
-        
+
     }
 
     public void initBoard(){
-        p.setY(0);
-        p.setX(size/2-1);
+        p.respawn(size/2-1,0);
         p.setRotation(180);
 
         algoLignes();
@@ -319,8 +320,10 @@ public class Field{
 
     public void newLevel(){
         if(p.getCoinCount()>=totalCoin){
+            if(p.getCoinCount() == veryTotalCoin)
+                p.scored(5);
             game();
-            p.setScore(p.getScore()+10);
+            p.scored(10);
             p.setCoinCount(0);
         
             if(difficulte <= 8){
@@ -387,9 +390,9 @@ public class Field{
             StdDraw.clear();
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.text(LocY, LocY+size/4, "CROSSY ARCADE");
-            StdDraw.filledRectangle(restartLocX, LocY, 1.7, 1);
-            StdDraw.filledRectangle(highScoreLocX, LocY,1.7,1 );
-            StdDraw.filledRectangle(quitLocX, LocY,1.7,1 );
+            StdDraw.filledRectangle(restartLocX, LocY, size/8.5, size/16);
+            StdDraw.filledRectangle(highScoreLocX, LocY,size/8.5,size/16 );
+            StdDraw.filledRectangle(quitLocX, LocY,size/8.5,size/16 );
             StdDraw.setPenColor(StdDraw.WHITE);
             StdDraw.text(restartLocX, LocY, "RESTART");
             StdDraw.text(highScoreLocX, LocY, "HIGHSCORE");
@@ -437,44 +440,13 @@ public class Field{
         }
     }
 
-    public List<Score> sort(String[] list){ //a refaire car petit bug
-        List<Score>listScore = new ArrayList<>();
-        
-        for (int i = 0; i<list.length; i++){
-            int max = -1;
-            Score maxScore = null;
-            int indice = 0;
-            for(int j = 0; j<list.length; j++){
-
-                if (Integer.parseInt(list[j].split(":")[1])>max){
-                    maxScore = new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1]));
-                    max = maxScore.getScore();
-                    indice = j;
-                }
-            }
-            listScore.add(maxScore);
-            String[] list2 = new String[list.length-1];
-            int x=0;
-            for (int j = 0; j < list.length; j++) {
-                if(j!=indice){
-                    list2[x] = list[j];
-                    x++;
-                }
-            }
-            list = list2;
+    public List<Score> sort(String[] list){
+        for(int j = 0; j<list.length; j++){
+            scores.add(new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1])));
         }
 
-        for (int j = 0; j< list.length; j++){
-            if(Integer.parseInt(list[j].split(":")[1])==2)
-                listScore.add(new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1])));
-        }
-
-        for (int j = 0; j< list.length; j++){
-            if(Integer.parseInt(list[j].split(":")[1])==0)
-                listScore.add(new Score(list[j].split(":")[0],Integer.parseInt(list[j].split(":")[1])));
-        }
-
-        return listScore;
+        scores.sort(Score.scoreComparator);
+        return scores;
     }
 
     public void showHighscore() throws IOException{
@@ -507,8 +479,8 @@ public class Field{
             StdDraw.clear();
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.text(middleX, titleY, "HIGHSCORE");
-            StdDraw.filledRectangle(restartLocX, titleY,1.7,1);
-            StdDraw.filledRectangle(quitLocX, titleY, 1.7,1);
+            StdDraw.filledRectangle(restartLocX, titleY,size/8.5,size/16);
+            StdDraw.filledRectangle(quitLocX, titleY, size/8.5,size/16);
 
             int sizeH = listScoreObject.size();
             
@@ -516,9 +488,9 @@ public class Field{
                 sizeH = 12;
 
             for (int i = 0; i < sizeH; i++){
-                StdDraw.text(middleX, titleY-i-2, listScoreObject.get(i).toString());
+                StdDraw.text(middleX, titleY-(i*size/16)-2*size/16, listScoreObject.get(i).toString());
                 if(i!=size-1){
-                    StdDraw.line(middleX-this.size/3, titleY-i-2.5, middleX+this.size/3, titleY-i-2.5);
+                    StdDraw.line(middleX-this.size/3, titleY-(i*size/16)-2.5*size/16, middleX+this.size/3, titleY-(i*size/16)-2.5*size/16);
                 }
             }
 

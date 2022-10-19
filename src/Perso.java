@@ -104,9 +104,12 @@ public class Perso {
                 isTyping = false;
         }
 
+        if (this.name.equals(""))
+            this.name = "unnamed";
         return this.name;
     }
 
+    public void scored(int x){this.score += x;}
     public void setX(int x){
         this.x = x;
     }

@@ -4,8 +4,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Comparator;
 
-public class Score {
+public class Score{
 
     private String name;
     private int score;
@@ -46,7 +47,20 @@ public class Score {
         fileWriter.close();
     }
 
-    public String toString(){
-        return this.name+":"+score;
+    public String toString() {
+        return this.name + ":" + score;
     }
+
+    public static Comparator scoreComparator = new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+            Score s1 = (Score) o1;
+            Score s2 = (Score) o2;
+            if(s1.score > s2.score)
+                return -1;
+            if(s1.score == s2.score)
+                return 0;
+            return 1;
+        }
+    };
 }
